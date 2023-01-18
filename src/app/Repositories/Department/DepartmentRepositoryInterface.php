@@ -12,3 +12,4 @@ interface DepartmentRepositoryInterface
      */
     function getAll(): object;
 }
+
