@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,4 +16,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::resource('contacts', ContactController::class, ['only' => ['index', 'create', 'store']]);
+
+Route::prefix('contacts')->name('contacts.')->group(function () {
+    Route::post('confirm', [ContactController::class, 'confirm'])->name('confirm');
 });
