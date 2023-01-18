@@ -1,59 +1,67 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ContactRequest;
-use App\Models\Contact;
-use App\Models\Department;
+
+use App\Repositories\Contact\ContactRepositoryInterface;
+use App\Repositories\Department\DepartmentRepositoryInterface;
+
 use Illuminate\Http\Request;
 
 class ContactController extends Controller
 {
+    protected $ContactRepository;
+    protected $DepartmentRepository;
+
+    public function __construct(
+        ContactRepositoryInterface $contactRepository,
+        DepartmentRepositoryInterface $departmentRepository
+    )
+    {
+        $this->ContactRepository = $contactRepository;
+        $this->DepartmentRepository = $departmentRepository;
+    }
+
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * お問い合わせ一覧ページ用のアクションです。
      */
     public function index()
     {
-        $contacts = Contact::with('department')->get()->sortByDesc('contact_id');;
+        $contacts = $this->ContactRepository->getAll();
         return view('contacts.index', compact('contacts'));
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * お問い合わせ作成ページ用のアクションです。
      */
     public function create()
     {
-        $departments = Department::select('id', 'name')->get();
+        $departments = $this->DepartmentRepository->getAll();
         return view('contacts.create', compact('departments'));
     }
 
-    public function confirm(ContactRequest $request, Contact $contact)
+    /**
+     * お問い合わせ確認ページ用のアクションです。
+     */
+    public function confirm(ContactRequest $request)
     {
-        $form = $request->all();
-        unset($form['_token']);
-        $contact->fill($form);
+        $contact = $this->ContactRepository->new($request);
         return view('contacts.confirm', compact('contact'));
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * お問い合わせ登録用のアクションです。
+     * 確認画面で修正するボタンを押した場合は、inputの値を引き継いで作成ページにリダイレクトします。
      */
-    public function store(ContactRequest $request, Contact $contact)
+    public function store(ContactRequest $request)
     {
         if($request->input('back') == 'back') {
             return redirect()->route('contacts.create')->withInput();
         }
 
-        $form = $request->all();
-        unset($form['_token']);
-        $contact->fill($form)->save();
+        $this->ContactRepository->create($request);
         return view('contacts.complete');
     }
 }

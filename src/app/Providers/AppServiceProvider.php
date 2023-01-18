@@ -4,6 +4,11 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
+use App\Repositories\Contact\ContactRepositoryInterface;
+use App\Repositories\Contact\ContactRepository;
+use App\Repositories\Department\DepartmentRepositoryInterface;
+use App\Repositories\Department\DepartmentRepository;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -13,7 +18,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(
+            ContactRepositoryInterface::class,
+            ContactRepository::class
+        );
+        $this->app->bind(
+            DepartmentRepositoryInterface::class,
+            DepartmentRepository::class
+        );
     }
 
     /**
