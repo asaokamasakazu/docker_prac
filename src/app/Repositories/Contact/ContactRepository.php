@@ -1,8 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Repositories\Contact;
 
 use App\Models\Contact;
+
+use Illuminate\Support\Collection;
 
 class ContactRepository implements ContactRepositoryInterface
 {
@@ -20,15 +23,15 @@ class ContactRepository implements ContactRepositoryInterface
     /**
      * @inheritDoc
      */
-    public function getAll(): object
+    public function getAll(): Collection
     {
-        return $this->contact->all();
+        return $this->contact->with('department')->get();
     }
 
     /**
      * @inheritDoc
      */
-    public function new($request): Contact
+    public function new(FormRequest $request): Contact
     {
         return $this->contact->newInstance($request->all());
     }
@@ -36,7 +39,7 @@ class ContactRepository implements ContactRepositoryInterface
     /**
      * @inheritDoc
      */
-    public function create($request): Contact
+    public function create(FormRequest $request): Contact
     {
         return $this->contact->create($request->all());
     }

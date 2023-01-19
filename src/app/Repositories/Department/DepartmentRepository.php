@@ -1,8 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Repositories\Department;
 
 use App\Models\Department;
+
+use Illuminate\Support\Collection;
 
 class DepartmentRepository implements DepartmentRepositoryInterface
 {
@@ -20,7 +23,7 @@ class DepartmentRepository implements DepartmentRepositoryInterface
     /**
      * @inheritDoc
      */
-    public function getAll(): object
+    public function getAll(): Collection
     {
         return $this->department->all();
     }
